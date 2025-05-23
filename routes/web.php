@@ -3,7 +3,8 @@
 use App\Http\Controllers\AuthController;
 use App\Http\Controllers\AdminDashboardController;
 use App\Http\Controllers\BookController;
-use App\Http\Controllers\MemberController;
+use App\Http\Controllers\Admin\MemberController; // Diperbarui
+use App\Http\Controllers\MemberPanelController;
 use App\Http\Controllers\TransactionController;
 use App\Http\Controllers\RecycleBinController;
 use App\Http\Controllers\ProfileController;
@@ -15,18 +16,14 @@ Route::post('/logout', [AuthController::class, 'logout'])->name('logout');
 
 Route::get('/admin/dashboard', [AdminDashboardController::class, 'index'])->name('admin.dashboard')->middleware('auth');
 
-Route::get('/member/books', function () {
-    return view('member.books');
-})->name('member.books')->middleware('auth');
-
 // Rute untuk Manajemen Buku (Admin)
 Route::prefix('admin/books')->name('admin.books.')->middleware('auth')->group(function () {
     Route::get('/', [BookController::class, 'index'])->name('index');
     Route::get('/create', [BookController::class, 'create'])->name('create');
     Route::post('/', [BookController::class, 'store'])->name('store');
     Route::get('/{book}/edit', [BookController::class, 'edit'])->name('edit');
-    Route::put('/{book}', [BookController::class, 'update'])->name('update');  
-    Route::delete('/{book}', [BookController::class, 'destroy'])->name('destroy'); 
+    Route::put('/{book}', [BookController::class, 'update'])->name('update');
+    Route::delete('/{book}', [BookController::class, 'destroy'])->name('destroy');
     Route::get('/restore/{id}', [BookController::class, 'restore'])->name('restore');
     Route::delete('/force-delete/{id}', [BookController::class, 'forceDelete'])->name('forceDelete');
 });
@@ -37,7 +34,7 @@ Route::prefix('admin/members')->name('admin.members.')->middleware('auth')->grou
     Route::get('/create', [MemberController::class, 'create'])->name('create');
     Route::post('/', [MemberController::class, 'store'])->name('store');
     Route::get('/{member}/edit', [MemberController::class, 'edit'])->name('edit');
-    Route::put('/{member}', [MemberController::class, 'update'])->name('update'); 
+    Route::put('/{member}', [MemberController::class, 'update'])->name('update');
     Route::delete('/{member}', [MemberController::class, 'destroy'])->name('destroy');
     Route::get('/restore/{id}', [MemberController::class, 'restore'])->name('restore');
     Route::delete('/force-delete/{id}', [MemberController::class, 'forceDelete'])->name('forceDelete');
@@ -65,4 +62,15 @@ Route::prefix('admin/profile')->name('admin.profile.')->middleware('auth')->grou
     Route::get('/', [ProfileController::class, 'show'])->name('show');
     Route::get('/edit', [ProfileController::class, 'edit'])->name('edit');
     Route::put('/', [ProfileController::class, 'update'])->name('update');
+});
+
+// Rute untuk Fitur Anggota (Member)
+Route::prefix('member')->middleware(['auth'])->group(function () {
+    Route::get('/', [MemberPanelController::class, 'books'])->name('member.dashboard');
+    Route::get('/books', [MemberPanelController::class, 'books'])->name('member.books');
+    Route::get('/borrow-request', [MemberPanelController::class, 'borrowRequest'])->name('member.borrow-request');
+    Route::post('/borrow-request', [MemberPanelController::class, 'storeBorrowRequest'])->name('member.store-borrow-request');
+    Route::get('/borrow-history', [MemberPanelController::class, 'borrowHistory'])->name('member.borrow-history');
+    Route::get('/profile', [MemberPanelController::class, 'profile'])->name('member.profile');
+    Route::put('/profile', [MemberPanelController::class, 'updateProfile'])->name('member.update-profile');
 });
