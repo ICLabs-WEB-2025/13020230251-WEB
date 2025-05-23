@@ -13,7 +13,7 @@ class BookController extends Controller
         if (Auth::user()->role !== 'admin') {
             abort(403, 'Unauthorized');
         }
-        $books = Book::withTrashed()->get(); // Menampilkan semua buku termasuk yang di-soft delete
+        $books = Book::withTrashed()->get();
         return view('admin.books.index', compact('books'));
     }
 
@@ -35,13 +35,23 @@ class BookController extends Controller
             'title' => 'required|string|max:255',
             'author' => 'required|string|max:255',
             'publisher' => 'nullable|string|max:255',
-            'year' => 'nullable|integer|min:1000|max:9999',
-            'isbn' => 'nullable|string|unique:books,isbn',
+            'year' => 'nullable|integer|min:1000|max:' . (date('Y') + 1),
+            'isbn' => 'nullable|string|max:13',
             'status' => 'required|in:available,borrowed',
+            'stock' => 'required|integer|min:0', // Validasi untuk stock
         ]);
 
-        Book::create($request->all());
-        return redirect()->route('admin.books.index')->with('success', 'Book created successfully.');
+        Book::create([
+            'title' => $request->title,
+            'author' => $request->author,
+            'publisher' => $request->publisher,
+            'year' => $request->year,
+            'isbn' => $request->isbn,
+            'status' => $request->status,
+            'stock' => $request->stock, // Simpan stock
+        ]);
+
+        return redirect()->route('admin.books.index')->with('success', 'Book added successfully.');
     }
 
     public function edit(Book $book)
@@ -62,12 +72,22 @@ class BookController extends Controller
             'title' => 'required|string|max:255',
             'author' => 'required|string|max:255',
             'publisher' => 'nullable|string|max:255',
-            'year' => 'nullable|integer|min:1000|max:9999',
-            'isbn' => 'nullable|string|unique:books,isbn,' . $book->id,
+            'year' => 'nullable|integer|min:1000|max:' . (date('Y') + 1),
+            'isbn' => 'nullable|string|max:13',
             'status' => 'required|in:available,borrowed',
+            'stock' => 'required|integer|min:0', // Validasi untuk stock
         ]);
 
-        $book->update($request->all());
+        $book->update([
+            'title' => $request->title,
+            'author' => $request->author,
+            'publisher' => $request->publisher,
+            'year' => $request->year,
+            'isbn' => $request->isbn,
+            'status' => $request->status,
+            'stock' => $request->stock, // Update stock
+        ]);
+
         return redirect()->route('admin.books.index')->with('success', 'Book updated successfully.');
     }
 
