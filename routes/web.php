@@ -3,17 +3,24 @@
 use App\Http\Controllers\AuthController;
 use App\Http\Controllers\AdminDashboardController;
 use App\Http\Controllers\BookController;
-use App\Http\Controllers\Admin\MemberController; // Diperbarui
+use App\Http\Controllers\Admin\MemberController;
 use App\Http\Controllers\MemberPanelController;
 use App\Http\Controllers\TransactionController;
 use App\Http\Controllers\RecycleBinController;
 use App\Http\Controllers\ProfileController;
 use Illuminate\Support\Facades\Route;
 
+// Rute root mengarahkan ke login
+Route::get('/', function () {
+    return redirect()->route('login');
+});
+
+// Rute autentikasi
 Route::get('/login', [AuthController::class, 'showLoginForm'])->name('login');
 Route::post('/login', [AuthController::class, 'login']);
 Route::post('/logout', [AuthController::class, 'logout'])->name('logout');
 
+// Rute untuk Admin Dashboard
 Route::get('/admin/dashboard', [AdminDashboardController::class, 'index'])->name('admin.dashboard')->middleware('auth');
 
 // Rute untuk Manajemen Buku (Admin)

@@ -33,7 +33,10 @@
                                         <td class="fs-6">{{ $book->author }}</td>
                                         <td class="fs-6">{{ $book->deleted_at->format('Y-m-d H:i') }}</td>
                                         <td>
-                                            <a href="{{ route('admin.recycle-bin.restore-book', $book->id) }}" class="btn btn-ios btn-sm me-2">Restore</a>
+                                            <form action="{{ route('admin.recycle-bin.restore-book', $book->id) }}" method="POST" class="d-inline">
+                                                @csrf
+                                                <button type="submit" class="btn btn-ios btn-sm me-2">Restore</button>
+                                            </form>
                                             <form action="{{ route('admin.recycle-bin.force-delete-book', $book->id) }}" method="POST" class="d-inline">
                                                 @csrf
                                                 @method('DELETE')
@@ -77,7 +80,10 @@
                                         <td class="fs-6">{{ $member->email }}</td>
                                         <td class="fs-6">{{ $member->deleted_at->format('Y-m-d H:i') }}</td>
                                         <td>
-                                            <a href="{{ route('admin.recycle-bin.restore-member', $member->id) }}" class="btn btn-ios btn-sm me-2">Restore</a>
+                                            <form action="{{ route('admin.recycle-bin.restore-member', $member->id) }}" method="POST" class="d-inline">
+                                                @csrf
+                                                <button type="submit" class="btn btn-ios btn-sm me-2">Restore</button>
+                                            </form>
                                             <form action="{{ route('admin.recycle-bin.force-delete-member', $member->id) }}" method="POST" class="d-inline">
                                                 @csrf
                                                 @method('DELETE')

@@ -15,45 +15,39 @@
             <div class="card p-3">
                 <div class="card-body">
                     @if (session('success'))
-                        <div class="alert alert-success" role="alert">{{ session('success') }}</div>
+                        <div class="alert alert-success alert-dismissible fade show" role="alert">
+                            {{ session('success') }}
+                            <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+                        </div>
                     @endif
-                    <div class="input-group mb-3">
-                        <input type="text" class="form-control" id="searchInput" placeholder="Search books...">
+                    <div class="input-group mb-4">
+                        <input type="text" class="form-control" id="searchInput" placeholder="Search by title..." aria-label="Search books">
                         <button class="btn btn-ios" id="searchButton">Search</button>
                     </div>
-                    <div class="table-responsive">
-                        <table class="table table-hover align-middle">
-                            <thead>
-                                <tr>
-                                    <th class="fs-6">Title</th>
-                                    <th class="fs-6">Author</th>
-                                    <th class="fs-6">Stock</th>
-                                    <th class="fs-6">Status</th>
-                                    <th class="fs-6">Action</th>
-                                </tr>
-                            </thead>
-                            <tbody id="bookTable">
-                                @forelse ($books as $book)
-                                    <tr>
-                                        <td class="fs-6">{{ $book->title }}</td>
-                                        <td class="fs-6">{{ $book->author }}</td>
-                                        <td class="fs-6">{{ $book->stock }}</td>
-                                        <td class="fs-6">{{ ucfirst($book->status) }}</td>
-                                        <td>
+                    <div class="row row-cols-1 row-cols-md-2 row-cols-lg-3 g-4" id="bookGrid">
+                        @forelse ($books as $book)
+                            <div class="col">
+                                <div class="card h-100">
+                                    <div class="card-body">
+                                        <h5 class="card-title">{{ $book->title }}</h5>
+                                        <p class="card-text"><strong>Author:</strong> {{ $book->author }}</p>
+                                        <p class="card-text"><strong>Stock:</strong> {{ $book->stock }}</p>
+                                        <p class="card-text"><strong>Status:</strong> {{ ucfirst($book->status) }}</p>
+                                        <div class="mt-3">
                                             @if ($book->stock > 0 && $book->status == 'available')
                                                 <a href="{{ route('member.borrow-request') }}?book_id={{ $book->id }}" class="btn btn-ios btn-sm">Borrow</a>
                                             @else
                                                 <button class="btn btn-secondary btn-sm" disabled>Not Available</button>
                                             @endif
-                                        </td>
-                                    </tr>
-                                @empty
-                                    <tr>
-                                        <td colspan="5" class="text-center fs-6">No books found.</td>
-                                    </tr>
-                                @endforelse
-                            </tbody>
-                        </table>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        @empty
+                            <div class="col-12 text-center">
+                                <p class="text-muted fs-6">No books found.</p>
+                            </div>
+                        @endforelse
                     </div>
                 </div>
             </div>
@@ -65,13 +59,27 @@
     <script>
         document.getElementById('searchButton').addEventListener('click', function() {
             const query = document.getElementById('searchInput').value.toLowerCase();
-            const rows = document.querySelectorAll('#bookTable tr');
-            rows.forEach(row => {
-                const title = row.cells[0].textContent.toLowerCase();
+            const cards = document.querySelectorAll('#bookGrid .col');
+            cards.forEach(card => {
+                const title = card.querySelector('.card-title').textContent.toLowerCase();
                 if (query === '' || title.includes(query)) {
-                    row.style.display = '';
+                    card.style.display = '';
                 } else {
-                    row.style.display = 'none';
+                    card.style.display = 'none';
+                }
+            });
+        });
+
+        // Real-time search
+        document.getElementById('searchInput').addEventListener('input', function() {
+            const query = this.value.toLowerCase();
+            const cards = document.querySelectorAll('#bookGrid .col');
+            cards.forEach(card => {
+                const title = card.querySelector('.card-title').textContent.toLowerCase();
+                if (query === '' || title.includes(query)) {
+                    card.style.display = '';
+                } else {
+                    card.style.display = 'none';
                 }
             });
         });

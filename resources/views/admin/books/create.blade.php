@@ -11,7 +11,7 @@
     </div>
 
     <div class="row mb-3">
-        <div class="col-md-6">
+        <div class="col-md-6">  
             <div class="card p-3">
                 <div class="card-body">
                     @if ($errors->any())
