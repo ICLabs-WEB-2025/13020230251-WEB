@@ -53,6 +53,8 @@ Route::prefix('admin/transactions')->name('admin.transactions.')->middleware('au
     Route::get('/create', [TransactionController::class, 'create'])->name('create');
     Route::post('/', [TransactionController::class, 'store'])->name('store');
     Route::post('/{transaction}/return', [TransactionController::class, 'returnBook'])->name('return');
+    Route::post('/{transaction}/approve', [TransactionController::class, 'approve'])->name('approve');
+    Route::post('/{transaction}/reject', [TransactionController::class, 'reject'])->name('reject');
 });
 
 // Rute untuk Recycle Bin (Admin)

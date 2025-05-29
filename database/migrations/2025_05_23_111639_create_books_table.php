@@ -16,6 +16,7 @@
               $table->integer('year')->nullable();
               $table->string('isbn')->nullable();
               $table->enum('status', ['available', 'borrowed'])->default('available');
+                $table->integer('stock')->default(0);
               $table->softDeletes();
               $table->timestamps();
           });

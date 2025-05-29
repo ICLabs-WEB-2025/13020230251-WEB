@@ -15,6 +15,7 @@ return new class extends Migration
             $table->date('borrow_date');
             $table->date('return_date')->nullable();
             $table->decimal('fine', 8, 2)->default(0.00);
+            $table->enum('status', ['pending', 'approved', 'rejected', 'returned'])->default('pending'); // Tambahkan kolom status
             $table->timestamps();
         });
     }

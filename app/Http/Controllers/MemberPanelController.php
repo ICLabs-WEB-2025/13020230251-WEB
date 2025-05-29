@@ -17,7 +17,7 @@ class MemberPanelController extends Controller
         }
 
         $books = Book::where('stock', '>', 0)
-                     ->where('status', 'available') // Gunakan status dari migrasi Anda
+                     ->where('status', 'available')
                      ->get();
         return view('member.books', compact('books'));
     }
@@ -46,19 +46,19 @@ class MemberPanelController extends Controller
             'return_date' => 'required|date|after:borrow_date',
         ]);
 
+        $book = Book::findOrFail($request->book_id);
+        if ($book->status !== 'available' || $book->stock <= 0) {
+            return back()->withErrors(['book_id' => 'This book is not available for borrowing.']);
+        }
+
         Transaction::create([
             'user_id' => Auth::id(),
             'book_id' => $request->book_id,
             'borrow_date' => $request->borrow_date,
-            'return_date' => $request->return_date,
-            'fine' => 0.00, // Sesuai dengan migrasi Anda
+            'return_date' => null, // Akan diisi saat approve
+            'fine' => 0.00,
+            'status' => 'pending', // Set status ke pending
         ]);
-
-        // Update status buku menjadi 'borrowed'
-        $book = Book::find($request->book_id);
-        $book->status = 'borrowed';
-        $book->stock = $book->stock - 1;
-        $book->save();
 
         return redirect()->route('member.borrow-history')->with('success', 'Borrow request submitted successfully.');
     }

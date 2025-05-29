@@ -12,6 +12,7 @@ class Transaction extends Model
         'borrow_date',
         'return_date',
         'fine',
+        'status',
     ];
 
     protected $casts = [

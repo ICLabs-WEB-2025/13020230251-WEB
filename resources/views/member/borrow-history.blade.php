@@ -12,15 +12,15 @@
 
     <div class="row">
         <div class="col-12">
-            <div class="card p-3">
+            <div class="card p-3" style="background: linear-gradient(135deg, #f5f7fa, #e0e7f0); border-radius: 15px; box-shadow: 0 4px 15px rgba(0, 0, 0, 0.1);">
                 <div class="card-body">
                     <div class="table-responsive">
                         <table class="table table-hover align-middle">
                             <thead>
                                 <tr>
                                     <th class="fs-6">Book Title</th>
-                                    <th class="fs-6">Borrow Date</th>
-                                    <th class="fs-6">Return Date</th>
+                                    <th class="fs-6 d-none d-md-table-cell">Borrow Date</th>
+                                    <th class="fs-6 d-none d-md-table-cell">Return Date</th>
                                     <th class="fs-6">Status</th>
                                 </tr>
                             </thead>
@@ -28,8 +28,8 @@
                                 @forelse ($transactions as $transaction)
                                     <tr>
                                         <td class="fs-6">{{ $transaction->book->title }}</td>
-                                        <td class="fs-6">{{ $transaction->borrow_date }}</td>
-                                        <td class="fs-6">{{ $transaction->return_date }}</td>
+                                        <td class="fs-6 d-none d-md-table-cell">{{ $transaction->borrow_date }}</td>
+                                        <td class="fs-6 d-none d-md-table-cell">{{ $transaction->return_date ?? '-' }}</td>
                                         <td class="fs-6">{{ ucfirst($transaction->status) }}</td>
                                     </tr>
                                 @empty
