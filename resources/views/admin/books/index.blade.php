@@ -15,9 +15,37 @@
             <div class="card p-3">
                 <div class="card-body">
                     @if (session('success'))
-                        <div class="alert alert-success" role="alert">{{ session('success') }}</div>
+                        <div class="alert alert-success alert-dismissible fade show" role="alert">
+                            {{ session('success') }}
+                            <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+                        </div>
                     @endif
-                    <a href="{{ route('admin.books.create') }}" class="btn btn-ios mb-3">Add New Book</a>
+
+                    <!-- Search and Filter -->
+                    <div class="row mb-3">
+                        <div class="col-md-8">
+                            <form method="GET" action="{{ route('admin.books.index') }}" class="row g-2">
+                                <div class="col-auto">
+                                    <input type="text" name="search" class="form-control" placeholder="Search title, author, or ISBN" value="{{ request('search') }}">
+                                </div>
+                                <div class="col-auto">
+                                    <select name="status" class="form-select">
+                                        <option value="">All Status</option>
+                                        <option value="available" {{ request('status') == 'available' ? 'selected' : '' }}>Available</option>
+                                        <option value="borrowed" {{ request('status') == 'borrowed' ? 'selected' : '' }}>Borrowed</option>
+                                    </select>
+                                </div>
+                                <div class="col-auto">
+                                    <button type="submit" class="btn btn-ios">Filter</button>
+                                </div>
+                            </form>
+                        </div>
+                        <div class="col-md-4 text-md-end">
+                            <a href="{{ route('admin.books.create') }}" class="btn btn-ios">Add New Book</a>
+                        </div>
+                    </div>
+
+                    <!-- Table -->
                     <div class="table-responsive">
                         <table class="table table-hover align-middle">
                             <thead>
@@ -40,7 +68,11 @@
                                         <td>{{ $book->publisher ?? '-' }}</td>
                                         <td>{{ $book->year ?? '-' }}</td>
                                         <td>{{ $book->isbn ?? '-' }}</td>
-                                        <td>{{ ucfirst($book->status) }}</td>
+                                        <td>
+                                            <span class="badge {{ $book->status == 'available' ? 'bg-success' : 'bg-warning' }}">
+                                                {{ ucfirst($book->status) }}
+                                            </span>
+                                        </td>
                                         <td>{{ $book->stock }}</td>
                                         <td>
                                             @if ($book->trashed())
@@ -69,6 +101,11 @@
                                 @endforelse
                             </tbody>
                         </table>
+                    </div>
+
+                    <!-- Pagination -->
+                    <div class="d-flex justify-content-center mt-3">
+                        {{ $books->appends(request()->query())->links('pagination::bootstrap-5') }}
                     </div>
                 </div>
             </div>

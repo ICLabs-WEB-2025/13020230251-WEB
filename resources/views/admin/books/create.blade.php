@@ -11,18 +11,20 @@
     </div>
 
     <div class="row mb-3">
-        <div class="col-md-6">  
+        <div class="col-md-6">
             <div class="card p-3">
                 <div class="card-body">
                     @if ($errors->any())
-                        <div class="alert alert-danger">
+                        <div class="alert alert-danger alert-dismissible fade show" role="alert">
                             <ul>
                                 @foreach ($errors->all() as $error)
                                     <li>{{ $error }}</li>
                                 @endforeach
                             </ul>
+                            <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
                         </div>
                     @endif
+
                     <form action="{{ route('admin.books.store') }}" method="POST">
                         @csrf
                         <div class="mb-3">
@@ -51,7 +53,7 @@
 
                         <div class="mb-3">
                             <label for="year" class="form-label">Year</label>
-                            <input type="number" class="form-control" id="year" name="year" value="{{ old('year') }}">
+                            <input type="number" class="form-control" id="year" name="year" value="{{ old('year') }}" min="1900" max="{{ date('Y') }}">
                             @error('year')
                                 <div class="text-danger">{{ $message }}</div>
                             @enderror
@@ -84,7 +86,10 @@
                             @enderror
                         </div>
 
-                        <button type="submit" class="btn btn-ios">Add Book</button>
+                        <div class="d-flex gap-2">
+                            <button type="submit" class="btn btn-ios">Add Book</button>
+                            <a href="{{ route('admin.books.index') }}" class="btn btn-secondary">Cancel</a>
+                        </div>
                     </form>
                 </div>
             </div>

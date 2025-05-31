@@ -8,12 +8,32 @@ use Illuminate\Support\Facades\Auth;
 
 class BookController extends Controller
 {
-    public function index()
+    public function index(Request $request)
     {
         if (Auth::user()->role !== 'admin') {
             abort(403, 'Unauthorized');
         }
-        $books = Book::withTrashed()->get();
+
+        $query = Book::withTrashed();
+
+        // Pencarian berdasarkan title, author, atau isbn
+        if ($request->filled('search')) {
+            $search = $request->input('search');
+            $query->where(function ($q) use ($search) {
+                $q->where('title', 'like', '%' . $search . '%')
+                  ->orWhere('author', 'like', '%' . $search . '%')
+                  ->orWhere('isbn', 'like', '%' . $search . '%');
+            });
+        }
+
+        // Filter berdasarkan status
+        if ($request->filled('status')) {
+            $query->where('status', $request->input('status'));
+        }
+
+        // Pagination (10 buku per halaman)
+        $books = $query->paginate(10);
+
         return view('admin.books.index', compact('books'));
     }
 
@@ -36,9 +56,9 @@ class BookController extends Controller
             'author' => 'required|string|max:255',
             'publisher' => 'nullable|string|max:255',
             'year' => 'nullable|integer|min:1000|max:' . (date('Y') + 1),
-            'isbn' => 'nullable|string|max:13',
+            'isbn' => 'nullable|string|max:13|unique:books,isbn',
             'status' => 'required|in:available,borrowed',
-            'stock' => 'required|integer|min:0', // Validasi untuk stock
+            'stock' => 'required|integer|min:0',
         ]);
 
         Book::create([
@@ -48,7 +68,7 @@ class BookController extends Controller
             'year' => $request->year,
             'isbn' => $request->isbn,
             'status' => $request->status,
-            'stock' => $request->stock, // Simpan stock
+            'stock' => $request->stock,
         ]);
 
         return redirect()->route('admin.books.index')->with('success', 'Book added successfully.');
@@ -73,9 +93,9 @@ class BookController extends Controller
             'author' => 'required|string|max:255',
             'publisher' => 'nullable|string|max:255',
             'year' => 'nullable|integer|min:1000|max:' . (date('Y') + 1),
-            'isbn' => 'nullable|string|max:13',
+            'isbn' => 'nullable|string|max:13|unique:books,isbn,' . $book->id,
             'status' => 'required|in:available,borrowed',
-            'stock' => 'required|integer|min:0', // Validasi untuk stock
+            'stock' => 'required|integer|min:0',
         ]);
 
         $book->update([
@@ -85,7 +105,7 @@ class BookController extends Controller
             'year' => $request->year,
             'isbn' => $request->isbn,
             'status' => $request->status,
-            'stock' => $request->stock, // Update stock
+            'stock' => $request->stock,
         ]);
 
         return redirect()->route('admin.books.index')->with('success', 'Book updated successfully.');
