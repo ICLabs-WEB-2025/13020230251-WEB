@@ -61,7 +61,7 @@
 
                         <div class="mb-3">
                             <label for="isbn" class="form-label">ISBN</label>
-                            <input type="text" class="form-control" id="isbn" name="isbn" value="{{ old('isbn') }}">
+                            <input type="text" class="form-control isbn-input" id="isbn" name="isbn" value="{{ old('isbn') }}" maxlength="13" oninput="limitISBN(this)">
                             @error('isbn')
                                 <div class="text-danger">{{ $message }}</div>
                             @enderror
@@ -96,3 +96,14 @@
         </div>
     </div>
 @endsection
+
+@push('scripts')
+    <script>
+        function limitISBN(input) {
+            let value = input.value.replace(/[^0-9]/g, ''); // Hanya izinkan angka
+            if (value.length > 13) {
+                input.value = value.substr(0, 13); // Potong ke 13 digit
+            }
+        }
+    </script>
+@endpush
